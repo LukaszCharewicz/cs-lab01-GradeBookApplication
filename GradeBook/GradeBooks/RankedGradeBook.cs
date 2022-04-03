@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using GradeBook.Enums;
 
@@ -13,21 +14,28 @@ namespace GradeBook.GradeBooks
             Type = GradeBookType.Ranked;
         }
 
-        //public override char GetLetterGrade()
-        //{
-        //    var test = 0;
+        public override char GetLetterGrade(double averageGrade)
+        {
+            if (Students.Count < 5)
+                throw new InvalidOperationException("Ranked grading requires at least 5 students");
+            else
+            {
+                var numberOfStudents = Students.Count;
+                var x = (int)Math.Ceiling(numberOfStudents * 0.2);
+                var grades = Students.OrderByDescending(e => e.AverageGrade).Select(e => e.AverageGrade).ToList();
 
-        //    if (test == 0)
-        //        return 'A';
-        //    else if (test == 1)
-        //        return 'B';
-        //    else if (test == 2)
-        //        return 'C';
-        //    else if (test == 3)
-        //        return 'D';
-        //    else if (test == 4)
-        //        return 'E';
-        //}
+                if (grades[x - 1] <= averageGrade)
+                    return 'A';
+                else if (grades[(x * 2) - 1] <= averageGrade)
+                    return 'B';
+                else if (grades[(x * 3) - 1] <= averageGrade)
+                    return 'C';
+                else if (grades[(x * 4) - 1] <= averageGrade)
+                    return 'D';
+                else
+                    return 'F';
+            }
+        }
 
         public override void CalculateStatistics()
         {
